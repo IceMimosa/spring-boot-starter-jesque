@@ -19,7 +19,7 @@ import redis.clients.util.Pool;
  * Date: 2017/8/8
  */
 @Configuration
-@ConditionalOnProperty(value = "msg.jesque.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "jesque.enable", havingValue = "true", matchIfMissing = true)
 public class JesqueConfiguration {
 
     @Bean
