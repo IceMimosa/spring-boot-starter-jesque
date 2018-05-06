@@ -1,6 +1,6 @@
 # 任务延时队列使用
 
-基于[Jesque](https://github.com/gresrun/jesque)封装的spring starter，使用注解的方式方便使用。
+基于[Jesque](https://github.com/gresrun/jesque)封装的springboot starter，使用注解的方式方便使用。
 
 # 使用方法
 
