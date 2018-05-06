@@ -24,6 +24,15 @@
 </repositories>
 ```
 
+* 基本配置（可以参照spring-data-redis）
+
+```yaml
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+```
+
 ## 定义消息生产者
 
 * 新建一个任务(队列)类型
