@@ -1,6 +1,30 @@
 # 任务延时队列使用
 
-# 1. 消息生产者
+基于[Jesque](https://github.com/gresrun/jesque)封装的spring starter，使用注解的方式方便使用。
+
+# 使用方法
+
+* pom
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>io.patamon.jesque</groupId>
+        <artifactId>spring-boot-starter-jesque</artifactId>
+        <version>1.0</version>
+    </dependency>
+</dependencies>
+
+<repositories>
+    <repository>
+        <id>patamon.release.repository</id>
+        <name>github release repository</name>
+        <url>https://raw.github.com/icemimosa/maven/release/</url>
+    </repository>
+</repositories>
+```
+
+## 定义消息生产者
 
 * 新建一个任务(队列)类型
 
@@ -53,7 +77,7 @@ public class DemoProvider {
 }
 ```
 
-# 2. 消息消费者
+## 定义消息消费者
 
 ```java
 /**
