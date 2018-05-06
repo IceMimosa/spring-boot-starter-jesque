@@ -157,7 +157,9 @@ public class JobContext {
      */
     void submit(String type, List<?> args) {
         Job job = new Job(ACTION_MAME, args);
-        client.enqueue(type, job);
+        // client.enqueue(type, job);
+        // 在redis中, 这里会存在`立即执行的Type`和`延时执行的Type`类型不同报错的问题, 这里改成延迟100毫秒执行
+        client.delayedEnqueue(type, job, System.currentTimeMillis() + 100L);
     }
 
     /**

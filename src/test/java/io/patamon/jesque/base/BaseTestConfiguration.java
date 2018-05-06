@@ -2,6 +2,7 @@ package io.patamon.jesque.base;
 
 import io.patamon.jesque.JesqueConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableAutoConfiguration
 @Import(JesqueConfiguration.class)
+@ComponentScan("io.patamon.jesque")
 public class BaseTestConfiguration {
 
 }

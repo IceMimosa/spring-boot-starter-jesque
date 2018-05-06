@@ -42,7 +42,7 @@ public class JobClientImpl implements JobClient {
      */
     @Override
     public void submit(String businessId, String type, long delay) {
-        if (delay < 1000) {
+        if (delay < 1000L) {
             submit(businessId, type);
         } else {
             jobContext.submit(type, ImmutableList.of(type, businessId), System.currentTimeMillis() + delay);
