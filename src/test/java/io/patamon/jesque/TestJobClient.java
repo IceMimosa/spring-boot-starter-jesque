@@ -55,4 +55,12 @@ public class TestJobClient extends BaseTest {
         latch.await();
     }
 
+    @Test
+    public void test_redis_shutdown() throws InterruptedException {
+        jobClient.submit("1", TEST_TYPE);
+        // shutdown redis and restart
+        Thread.sleep(20000L);
+        jobClient.submit("2", TEST_TYPE);
+        latch.await();
+    }
 }

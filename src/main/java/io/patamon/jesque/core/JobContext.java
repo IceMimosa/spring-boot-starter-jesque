@@ -1,6 +1,7 @@
 package io.patamon.jesque.core;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -13,8 +14,6 @@ import net.greghaines.jesque.client.Client;
 import net.greghaines.jesque.client.ClientPoolImpl;
 import net.greghaines.jesque.utils.JesqueUtils;
 import net.greghaines.jesque.worker.MapBasedJobFactory;
-import net.greghaines.jesque.worker.Worker;
-import net.greghaines.jesque.worker.WorkerPoolImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -44,10 +43,13 @@ public class JobContext {
     private static Logger log = LoggerFactory.getLogger(JobContext.class);
 
     private final ApplicationContext applicationContext;
+
+    // 监控 jesque worker 的执行状态
+    private JesqueMonitor jesqueMonitor = new JesqueMonitor(5000L);
     // 提交任务客户端
     private Client client;
     // 任务消费者
-    private Worker worker;
+    private SpringWorkerPoolImpl worker;
 
     /**
      * 任务执行类的名称
@@ -98,13 +100,23 @@ public class JobContext {
             }
         });
         // 注册给jesque, 并启动worker
-        this.worker = new WorkerPoolImpl(config,
+        this.worker = newWorker(config, jedisPool);
+        worker.start();
+        // 启动监控
+        jesqueMonitor.start();
+        // jvm hook
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    }
+
+    /**
+     * 生成 worker 实例
+     */
+    private static SpringWorkerPoolImpl newWorker(Config config, Pool<Jedis> jedisPool) {
+        return new SpringWorkerPoolImpl(config,
                 METHODS.keySet(),
                 new MapBasedJobFactory(JesqueUtils.map(JesqueUtils.entry(ACTION_MAME, JobAction.class))),
                 jedisPool
         );
-        new Thread(worker).start();
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
     }
 
     /**
@@ -184,4 +196,43 @@ public class JobContext {
         }
     }
 
+    class JesqueMonitor implements Runnable {
+
+        private Logger log = LoggerFactory.getLogger(JesqueMonitor.class);
+        private Long sleepMillis;
+
+        JesqueMonitor(Long sleepMillis) {
+            this.sleepMillis = sleepMillis;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    // 如果 worker 停止运行了, 重启
+                    if (worker.isShutdown()) {
+                        // 停止
+                        worker.end(true);
+                        // 重新赋值, 启动
+                        worker = newWorker(worker.getConfig(), worker.getJedisPool());
+                        worker.start();
+                    }
+                    Thread.sleep(sleepMillis);
+                } catch (Exception e) {
+                    // ignore
+                    log.error("Unknown exception, cause {}", Throwables.getStackTraceAsString(e));
+                }
+            }
+        }
+
+        /**
+         * 启动当前的 Runnable
+         */
+        void start() {
+            new ThreadFactoryBuilder()
+                    .setNameFormat("Jesque-Monitor-%d").build()
+                    .newThread(this)
+                    .start();
+        }
+    }
 }
