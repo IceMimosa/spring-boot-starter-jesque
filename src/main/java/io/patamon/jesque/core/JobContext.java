@@ -102,7 +102,7 @@ public class JobContext {
         // 注册给jesque, 并启动worker
         this.worker = newWorker(config, jedisPool);
         worker.start();
-        // 启动监控
+        // 启动 jesque worker 的自检程序
         jesqueMonitor.start();
         // jvm hook
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
@@ -196,6 +196,9 @@ public class JobContext {
         }
     }
 
+    /**
+     * 自检 worker 是否停止运行, 如果发现停止运行, 则重启
+     */
     class JesqueMonitor implements Runnable {
 
         private Logger log = LoggerFactory.getLogger(JesqueMonitor.class);
