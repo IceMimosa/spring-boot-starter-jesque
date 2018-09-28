@@ -24,7 +24,7 @@
 </repositories>
 ```
 
-* 基本配置（可以参照spring-data-redis）
+* Configuration （可以参照spring-data-redis）
 
 ```yaml
 spring:
@@ -33,7 +33,7 @@ spring:
     port: 6379
 ```
 
-## 定义消息生产者
+## Message Producer
 
 * 新建一个任务(队列)类型
 
@@ -52,7 +52,7 @@ public class JesqueType {
 }
 ```
 
-* 生产者代码如下
+* Producer example
 
 ```java
 /**
@@ -86,7 +86,7 @@ public class DemoProvider {
 }
 ```
 
-## 定义消息消费者
+## Message Consumer
 
 ```java
 /**
