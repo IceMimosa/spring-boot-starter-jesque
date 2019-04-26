@@ -11,7 +11,7 @@
     <dependency>
         <groupId>io.patamon.jesque</groupId>
         <artifactId>spring-boot-starter-jesque</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
     </dependency>
 </dependencies>
 
@@ -123,3 +123,5 @@ public class DemoConsumer {
 
 * 2018-09
     * Jesque因为redis服务挂掉, 而导致worker线程挂掉. 目前使用自检测重启的方式解决.
+* 2019-04
+    * Jesque2.1.3修复了之前的问题    
